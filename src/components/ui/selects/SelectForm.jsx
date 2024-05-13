@@ -1,6 +1,6 @@
 import PropTypes from "prop-types";
 
-const SelectForm = ({ inputName, handleChange, Icon, options }) => {
+const SelectForm = ({ inputName, handleChange, Icon, options, value }) => {
   return (
     <div className="flex bg-white">
       <div className="w-16 flex justify-center items-center bg-neutral-700">
@@ -11,6 +11,7 @@ const SelectForm = ({ inputName, handleChange, Icon, options }) => {
         id={inputName}
         className="w-full px-2 py-3 bg-transparent outline-none text-black"
         onChange={handleChange}
+        value={value}
       >
         {options.map((opt) => (
           <option value={opt} key={opt}>
@@ -26,5 +27,6 @@ SelectForm.propTypes = {
   handleChange: PropTypes.func.isRequired,
   Icon: PropTypes.any.isRequired,
   options: PropTypes.array.isRequired,
+  value: PropTypes.string,
 };
 export default SelectForm;

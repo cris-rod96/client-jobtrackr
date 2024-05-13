@@ -6,23 +6,76 @@ import { postulationsEndpoints } from "./api/postulations";
 import { FaEdit, FaTrash } from "react-icons/fa";
 import { Toaster } from "sonner";
 import { toast } from "sonner";
+import Swal from "sweetalert2";
 import { AxiosError } from "axios";
 
 const App = () => {
   const [showModal, setShowModal] = useState(false);
   const [postulations, setPostulations] = useState([]);
+  const [idPostulation, setIdPostulation] = useState(null);
   const toggleModal = () => setShowModal(!showModal);
-
-  useEffect(() => {
+  const fetchPostulations = () => {
     postulationsEndpoints
       .getAll()
       .then((res) => setPostulations(res.data))
       .catch(() => {});
+  };
+
+  const handleDelete = (id) => {
+    Swal.fire({
+      title: "¿Estas seguro de eliminar esta postulación?",
+      text: "Esta acción es irreversible, eliminarás esta postulación para futuras referencias.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Borrar postulación",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        Swal.fire({
+          title: "Contraseña de seguridad",
+          input: "password",
+          inputLabel: "Esta acción requiere de una contraseña",
+          inputPlaceholder: "Ingresa tu contraseña",
+        }).then((res) => {
+          const password = res.value;
+          postulationsEndpoints
+            .deletePostulation(id, password)
+            .then((res) => {
+              toast.success(res.data.message);
+              fetchPostulations();
+            })
+            .catch((err) => {
+              if (err instanceof AxiosError) {
+                toast.error(err.response.data.error);
+              } else {
+                toast.error("Error desconocido");
+              }
+            });
+        });
+      }
+    });
+  };
+  const handleEdit = (id) => {
+    setIdPostulation(id);
+    toggleModal();
+  };
+
+  useEffect(() => {
+    fetchPostulations();
   }, []);
 
   return (
     <section className="flex flex-col gap-5">
-      {showModal && <Modal toggleModal={toggleModal} toast={toast} />}
+      {showModal && (
+        <Modal
+          toggleModal={toggleModal}
+          toast={toast}
+          idPostulation={idPostulation}
+          setIdPostulation={setIdPostulation}
+          fetchPostulations={fetchPostulations}
+        />
+      )}
       <header className="flex flex-col">
         <Title title="JobTrackr" />
         <div className="flex gap-3">
@@ -71,10 +124,18 @@ const App = () => {
                   <td className="">{postulation.communicationChannel}</td>
                   <td className="">{postulation.status}</td>
                   <td className="flex items-center justify-center gap-2">
-                    <button>
+                    <button
+                      type="button"
+                      className="px-3 py-2 border border-yellow-500 bg-yellow-500 text-white rounded-md"
+                      onClick={() => handleEdit(postulation._id)}
+                    >
                       <FaEdit />
                     </button>
-                    <button>
+                    <button
+                      type="button"
+                      onClick={() => handleDelete(postulation._id)}
+                      className="px-3 py-2 border border-red-500 bg-red-500 text-white rounded-md"
+                    >
                       <FaTrash />
                     </button>
                   </td>
