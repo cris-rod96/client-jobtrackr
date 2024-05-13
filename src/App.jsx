@@ -4,6 +4,9 @@ import Modal from "./components/modal/Modal";
 import { useEffect } from "react";
 import { postulationsEndpoints } from "./api/postulations";
 import { FaEdit, FaTrash } from "react-icons/fa";
+import { Toaster } from "sonner";
+import { toast } from "sonner";
+import { AxiosError } from "axios";
 
 const App = () => {
   const [showModal, setShowModal] = useState(false);
@@ -14,12 +17,12 @@ const App = () => {
     postulationsEndpoints
       .getAll()
       .then((res) => setPostulations(res.data))
-      .catch((err) => console.log(err));
+      .catch(() => {});
   }, []);
 
   return (
     <section className="flex flex-col gap-5">
-      {showModal && <Modal toggleModal={toggleModal} />}
+      {showModal && <Modal toggleModal={toggleModal} toast={toast} />}
       <header className="flex flex-col">
         <Title title="JobTrackr" />
         <div className="flex gap-3">
@@ -87,6 +90,8 @@ const App = () => {
           )}
         </table>
       </header>
+
+      <Toaster richColors />
     </section>
   );
 };
