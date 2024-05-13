@@ -1,10 +1,22 @@
 import { useState } from "react";
 import { BtnPostulation, InputSearch, Title } from "./components";
 import Modal from "./components/modal/Modal";
+import { useEffect } from "react";
+import { postulationsEndpoints } from "./api/postulations";
+import { FaEdit, FaTrash } from "react-icons/fa";
 
 const App = () => {
   const [showModal, setShowModal] = useState(false);
+  const [postulations, setPostulations] = useState([]);
   const toggleModal = () => setShowModal(!showModal);
+
+  useEffect(() => {
+    postulationsEndpoints
+      .getAll()
+      .then((res) => setPostulations(res.data))
+      .catch((err) => console.log(err));
+  }, []);
+
   return (
     <section className="flex flex-col gap-5">
       {showModal && <Modal toggleModal={toggleModal} />}
@@ -14,56 +26,66 @@ const App = () => {
           <InputSearch />
           <BtnPostulation toggleModal={toggleModal} />
         </div>
-        <div className="relative overflow-x-auto shadow-md  mt-10">
-          <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400 flex flex-col">
-            <thead className="text-sm text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
-              <tr className="[&>th]:p-6">
-                <th scope="col">Fecha</th>
-                <th scope="col">Empresa</th>
-                <th scope="col">Website</th>
-                <th scope="col">Puesto</th>
-                <th scope="col">Requisitos</th>
-                <th scope="col">Ubicación</th>
-                <th scope="col">Modalidad</th>
-                <th scope="col">Salario</th>
-                <th scope="col">Reclutador</th>
-                <th scope="col">Teléfono</th>
-                <th scope="col">Email</th>
-                <th scope="col">Canal</th>
-                <th scope="col">Estado</th>
-                <th scope="col">
-                  <span className="sr-only">Edit</span>
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {/* <tr className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
-                <th
-                  scope="row"
-                  className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
+        <table className="table-fixed text-center  text-gray-500 dark:text-gray-400 flex flex-col mt-10">
+          <thead className="text-sm text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400 w-full [&>tr]:p-6">
+            <tr className="flex justify-between [&>th]:w-full [&>th]:text-center">
+              <th>Fecha</th>
+              <th>Empresa</th>
+              <th>Website</th>
+              <th>Puesto</th>
+              <th>Ubicación</th>
+              <th>Modalidad</th>
+              <th>Salario</th>
+              <th>Reclutador</th>
+              <th>Teléfono</th>
+              <th>Email</th>
+              <th>Canal</th>
+              <th>Estado</th>
+              <th>Options</th>
+            </tr>
+          </thead>
+          {postulations.length > 0 ? (
+            <tbody className="[&>tr]:p-6">
+              {postulations.map((postulation) => (
+                <tr
+                  className=" bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 flex justify-between text-center [&>td]:w-full [&>td]:text-center"
+                  key={postulation._id}
                 >
-                  Apple MacBook Pro 17
-                </th>
-                <td className="px-6 py-4">Silver</td>
-                <td className="px-6 py-4">Laptop</td>
-                <td className="px-6 py-4">$2999</td>
-                <td className="px-6 py-4 text-right">
-                  <a
-                    href="#"
-                    className="font-medium text-blue-600 dark:text-blue-500 hover:underline"
-                  >
-                    Edit
-                  </a>
-                </td>
-              </tr> */}
+                  <td>{postulation.postulationDate}</td>
+                  <td className="">{postulation.companyName}</td>
+                  <td className="">
+                    <a href={postulation.companyWebsite} target="__blank">
+                      Link
+                    </a>
+                  </td>
+                  <td className="">{postulation.jobTitle}</td>
+                  <td className="">{postulation.location}</td>
+                  <td className="">{postulation.modality}</td>
+                  <td className="">{postulation.offeredSalary}</td>
+                  <td className="">{postulation.recruiterName}</td>
+                  <td className="">{postulation.recruiterPhone}</td>
+                  <td className="">{postulation.recruiterEmail}</td>
+                  <td className="">{postulation.communicationChannel}</td>
+                  <td className="">{postulation.status}</td>
+                  <td className="flex items-center justify-center gap-2">
+                    <button>
+                      <FaEdit />
+                    </button>
+                    <button>
+                      <FaTrash />
+                    </button>
+                  </td>
+                </tr>
+              ))}
             </tbody>
+          ) : (
             <tfoot className="bg-gray-800 p-6 text-center">
               <span className="text-lg text-white font-bold">
                 Sin postulaciones registradas
               </span>
             </tfoot>
-          </table>
-        </div>
+          )}
+        </table>
       </header>
     </section>
   );
