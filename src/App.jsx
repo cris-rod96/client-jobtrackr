@@ -8,6 +8,8 @@ import { Toaster } from "sonner";
 import { toast } from "sonner";
 import Swal from "sweetalert2";
 import { AxiosError } from "axios";
+import { DiDotnet } from "react-icons/di";
+import { GoDotFill } from "react-icons/go";
 
 const App = () => {
   const [showModal, setShowModal] = useState(false);
@@ -78,8 +80,20 @@ const App = () => {
       )}
       <header className="flex flex-col">
         <Title title="JobTrackr" />
+        <div className="py-5 my-5 flex items-center px-2 border border-green-900 rounded-md bg-green-900 bg-opacity-50 text-white">
+          <p className="flex gap-2 font-light text-sm tracking-wide ">
+            <GoDotFill />
+            Nota: Este proyecto no está destinado para uso general. El autor lo
+            desarrolló con el propósito de llevar un registro de sus solicitudes
+            de trabajo y practicar sus habilidades. La aplicación está protegida
+            por una contraseña que solo el autor conoce. Además, está diseñada
+            para que los usuarios solo puedan visualizar las solicitudes
+            realizadas por el autor, garantizando así la privacidad de los
+            datos.
+          </p>
+        </div>
         <div className="flex gap-3">
-          <InputSearch />
+          <InputSearch disabled={postulations.length == 0} />
           <BtnPostulation toggleModal={toggleModal} />
         </div>
         <table className="table-fixed text-center  text-gray-500 dark:text-gray-400 flex flex-col mt-10">
